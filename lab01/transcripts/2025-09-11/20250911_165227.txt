@@ -1,0 +1,5 @@
+hi
+[2025-09-11T16:52:27][user] hello
+[2025-09-11T16:52:27][gemma3:1b] Hello there! How can I help you today?
+[2025-09-11T16:52:27][user] what is 2+2?
+[2025-09-11T16:52:27][gemma3:1b] Okay! 2 + 2 equals 4. 😊

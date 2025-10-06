@@ -1,0 +1,38 @@
+
+[2025-09-11T17:24:37][user] what is 2+2?
+
+[2025-09-11T17:24:38][gemma3:1b] Okay, that’s a simple addition! 2 + 2 equals 4. 
+
+Is there anything else I can help you with?
+
+[2025-09-11T17:24:45][user] can you subtract 2 from the last sum?
+
+[2025-09-11T17:24:46][gemma3:1b] Okay, let’s do that! The last sum was 4. Subtracting 2 from 4 gives us 2. 
+
+So, the new sum is 2.
+
+[2025-09-11T17:25:01][user] /model <gemma3:4b> Can you add 2 to the last sum?
+
+[2025-09-11T17:25:07][gemma3:4b] Okay, let's do it! The last sum we were working with was 2. Adding 2 to that gives us 4. 
+
+So, the new sum is 4.
+
+[2025-09-11T17:25:27][user] /new can you add 5 to the last sum?
+
+[2025-09-11T17:25:29][gemma3:4b] Okay, you want me to add 5 to the last sum. 
+
+To clarify, what was the last sum we were working with? Please remind me! 😊
+
+[2025-09-11T17:25:46][user] The last sum was 4!
+
+[2025-09-11T17:25:50][gemma3:4b] Okay, so the last sum was 4! Let’s add 5 to that... 4 + 5 = 9! 😊 
+
+Is that correct, or were we doing something else entirely?
+
+[2025-09-11T17:25:58][user] yes, that is correct
+
+[2025-09-11T17:26:01][gemma3:4b] Fantastic! 😊 I'm glad we got to 9. Is there anything else you’d like to add or calculate today?
+
+[2025-09-11T17:26:15][user] no, goodbye /exit
+
+[2025-09-11T17:26:16][gemma3:4b] Okay, goodbye to you too! 😊 Have a wonderful day!

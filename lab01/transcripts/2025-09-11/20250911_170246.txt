@@ -1,0 +1,30 @@
+
+[2025-09-11T17:03:01][user] Hello, how are you?
+
+[2025-09-11T17:03:01][gemma3:1b] Hello! I'm doing well, thanks for asking. How about you?
+
+[2025-09-11T17:03:09][user] Good! I have a question for you
+
+[2025-09-11T17:03:09][gemma3:1b] Okay, great! I’m ready. What’s your question? 😊
+
+[2025-09-11T17:03:14][user] What is 2 + 2?
+
+[2025-09-11T17:03:15][gemma3:1b] Okay, 2 + 2 equals 4. 😊 
+
+Is there anything else I can help you with?
+
+[2025-09-11T17:03:25][user] Can you add 3 to that sum?
+
+[2025-09-11T17:03:26][gemma3:1b] Okay, let’s do that! 2 + 2 equals 4. Adding 3 to that equals 7. 😊
+
+[2025-09-11T17:03:39][user] Now can you subtract 2?
+
+[2025-09-11T17:03:40][gemma3:1b] Okay, let’s do that! 2 + 2 equals 4. Adding 2 to that equals 6. 😊
+
+[2025-09-11T17:04:06][user] I wanted you to subtract 2, not add
+
+[2025-09-11T17:04:06][gemma3:1b] Okay, let’s do that! 2 + 2 equals 4. Adding 2 to that equals 6. 😊
+
+[2025-09-11T17:05:07][user] /model <gemma3:4b> Hello gemma3, can you add 3 to the previous sum?
+
+[2025-09-11T17:05:14][gemma3:4b] Okay, let’s do that! 2 + 2 equals 4. Adding 3 to that equals 7. 😊
