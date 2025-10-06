@@ -37,6 +37,3 @@ with open(FILE, 'r') as book:
         add_to_ch_file(line)
     
     add_to_em_file(em)
-
-#embeddings = np.load('embeddings.npy')
-#print(embeddings)
