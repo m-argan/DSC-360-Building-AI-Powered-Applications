@@ -14,14 +14,6 @@ def add(thelist, id, chunk, start, end) -> list:
         "end": end
         }
     thelist.append(segment)
-    #print("Text ", clean_chunk)
-    #print("start ", start)
-    #print("end", end)
-    #new_entry = {"id":id, "segment":segment}
-    #dictionary.update(new_entry)
-    #print("\nid " , id, "segment", segment)
-    #print("dict", dictionary)
-    #print(thelist)
     return thelist
 
 def addToDict(thelist,chunk, start, end) -> list:

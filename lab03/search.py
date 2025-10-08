@@ -2,8 +2,6 @@
 #import chunks
 import ollama
 import numpy as np
-import chunker
-import build_index
 import pandas as pd
 import json
 

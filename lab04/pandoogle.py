@@ -85,7 +85,7 @@ Use this context string to answer the question as accurately as possible:
 
 Also make sure to include the dataframe symbol that corresponds to the document you are using to answer the question.
 Here is the question: {userInput}.
-""" # formatting done by chat
+""" # formatting done by chatgpt
 try:
     response = ollama.chat(model = GE_MODEL, messages = [{"role" : "user", "content" : prompt}])  
     r = response.message.content
