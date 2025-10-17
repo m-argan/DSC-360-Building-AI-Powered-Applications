@@ -18,12 +18,10 @@ try:
         userInput += input("").strip()
 except EOFError as e:
     print('searching...')
-    #print(userInput)
 
 def embed(text):
     resp = ollama.embed(model=EM_MODEL, input=text)
     vec = resp["embeddings"][0]   # 1 x d
-    #print(vec)
     return vec
 
 # Function to get top similarity indexes, removing those below a certain similarity threshold
@@ -41,7 +39,6 @@ def getTop5(userInput):
     top = []
     for index in top5unchecked:
         dprod = flat[index]
-        
         # only add values similar enough to top5
         if dprod > 0.45:
             #print(dprod, " is similar enough!")
