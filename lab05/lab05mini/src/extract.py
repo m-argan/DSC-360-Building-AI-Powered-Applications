@@ -41,19 +41,36 @@ def extract_structured_record(line: str) -> SectionRow:
       - Validate the result with SectionRow(**data).
     """
     schema = SectionRow.model_json_schema()
-    SYSTEM_MSG = f"""extract structured course data from the following line according to the format, and respond in JSON format like: 
+    SYSTEM_MSG = f"""extract structured course data from the following line according to the format, and respond in JSON format. The only fields which will have dashes
+    is "days", which will be formatted using letters and dashes, letters (either M,W,F,T or R) to represent days of the week when class is being taught, 
+    and dashes to represent days when class is not being taught. For example, -M-W-F- means class is being taught only on Monday, Wednesday, and Friday. Here is an example of a 
+    line you might receive: 'THR 111 Lighting Practicum 1.0 A. Kuznetsova 8:00-9:00AM ------- OLIN 128', and here is an example of 
+    a properly formatted response: 
     {{'program': 'THR', 
     'number': '111',
-    'section': a,
+    'section': None,
     'title': 'Lighting Practicum',
     'credits': 1.0,
-    'days': -M-W-F-,
+    'days': -------,
     'times': 8:00-9:00AM,
     'room': OLIN 128,
     'faculty': 'A. Kuznetsova',
-    'tags': None}}. """
+    'tags': None}}. Here is another example line: CHE 132L CHE 132 Lab 0 a E. Wachter 8:00-11:00AM --T---- YOUN 202. Here is the properly formatted response for that line:
+    {{'program': 'CHE', 
+    'number': '132L',
+    'section': a,
+    'title': 'CHE 132 Lab',
+    'credits': 0.0,
+    'days': --T----,
+    'times': 8:00-11:00AM,
+    'room': YOUN 202,
+    'faculty': 'E. Wachter',
+    'tags': None}}. 
+    A proper JSON response must include all fields from the following schema:{schema}. The JSON response must include program, number, section, title, credits, 
+    days, times, room, faculty and tags, IN THAT ORDER. If section is not present, include it in the response and set it to null."""
 
-    USER_TEMPLATE = 'Extract the course data from the following line'+ line+'Provide the response in JSON format.'
+    USER_TEMPLATE = 'You have been provided a line of course information which is formatted in the following way: program, number, title, credits, section' \
+    'faculty, times, days, room, tags. Extract structured course data from this line according to the format, and provide the response in JSON format:'+ line+'.'
     resp = ollama.chat(
     model=MODEL,
     messages=[
@@ -115,7 +132,6 @@ def process_file(in_path: str, out_path: str):
                 break
 
             try:
-                print("hyello")
                 record = extract_structured_record(line)
                 print("record:", record)
                 # Optional: view the validated record for debugging

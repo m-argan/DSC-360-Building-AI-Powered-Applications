@@ -47,17 +47,20 @@ class SectionRow(BaseModel):
     @field_validator("section")
     @classmethod
     def validate_section(cls, v: Optional[str]) -> Optional[str]:
-        """Section, if present, must be a letter."""
-        if v is not None and not re.fullmatch(r"[a-d]?", v):
-            raise ValueError("section must be three digits")
+        """Section, if present, must be a a single letter a-d letter."""
+        if v is None:
+            return None
+        if not re.fullmatch(r"[a-d]", v):
+            raise ValueError("section must be a single letter a-d")
         return v
 
     @field_validator("title")
     @classmethod
     def validate_title(cls, v: str) -> str:
-        """Title must be a non-empty string and title cased"""
-        if not v or not v.istitle():
-            raise ValueError("title must be a non-empty string and title case")
+        print("title:",v)
+        """Title must be a non-empty string"""
+        if v is None:
+            raise ValueError("title must be a non-empty string")
         return v
     
     @field_validator("credits")
@@ -71,12 +74,14 @@ class SectionRow(BaseModel):
     @field_validator("days")
     @classmethod
     def validate_days(cls, v: Optional[str]) -> Optional[str]:
+        print(repr(v), repr(v.strip()))
         '''Days should either be ------ or -M-W-F-, or --T-R--'''
-        if v == '------':
+        if v.strip() == '-------':
+            print("its a match!")
             return None
-        elif v!= ('-M-W-F-') or ('--T-R--') or ('--T----') or ('----R--') or ('-M-----') or ('-----F-') or ('-M--W--') or ('--W--F-') or ('---W---') or ('------'):
-            raise ValueError("credits should contain 7 elements representing days of the week, with dashes for no class and letters for class days")
-        return v
+        elif v.strip() != ('-M-W-F-') or ('--T-R--') or ('--T----') or ('----R--') or ('-M-----') or ('-----F-') or ('-M--W--') or ('--W--F-') or ('---W---') or ('------'):
+            raise ValueError("days should contain 7 elements representing days of the week, with dashes for no class and letters for class days")
+        return v.strip()
     
     @field_validator("times")
     @classmethod
@@ -84,7 +89,7 @@ class SectionRow(BaseModel):
         '''Times should either be TBA or in the format HH:MM'''
         if v == "TBA":
             return None
-        elif not re.fullmatch(r"?:[1-2]:\d{2}-?:[1-2]:\d{2}(?:AM|PM)", v):
+        elif not re.fullmatch(r"^\d{1,2}:\d{2}-\d{1,2}:\d{2}(?:AM|PM)$", v):
             raise ValueError("times should be in the format HH:MM AM/PM")
         return v
     
