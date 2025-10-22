@@ -57,7 +57,6 @@ class SectionRow(BaseModel):
     @field_validator("title")
     @classmethod
     def validate_title(cls, v: str) -> str:
-        print("title:",v)
         """Title must be a non-empty string"""
         if v is None:
             raise ValueError("title must be a non-empty string")
@@ -74,14 +73,19 @@ class SectionRow(BaseModel):
     @field_validator("days")
     @classmethod
     def validate_days(cls, v: Optional[str]) -> Optional[str]:
-        print(repr(v), repr(v.strip()))
-        '''Days should either be ------ or -M-W-F-, or --T-R--'''
-        if v.strip() == '-------':
-            print("its a match!")
+        """Days should either be ------- or a string like -M-W-F- representing days of the week."""
+        if not v:
             return None
-        elif v.strip() != ('-M-W-F-') or ('--T-R--') or ('--T----') or ('----R--') or ('-M-----') or ('-----F-') or ('-M--W--') or ('--W--F-') or ('---W---') or ('------'):
+        cleaned = ''.join(v.split()).replace('\u200b', '').replace('\xa0', '')
+        print("cleaned repr:", repr(cleaned))
+
+        valid_patterns = {'-M-W-F-', '--T-R--', '--T----', '---R---', '-M-----', '-----F-', '-M--W--', '--W--F-', '---W---', '-------'}
+        if cleaned == '-------':
+            return None
+
+        if cleaned not in valid_patterns:
             raise ValueError("days should contain 7 elements representing days of the week, with dashes for no class and letters for class days")
-        return v.strip()
+        return cleaned
     
     @field_validator("times")
     @classmethod
