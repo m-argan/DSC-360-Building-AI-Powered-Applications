@@ -66,7 +66,7 @@ class SectionRow(BaseModel):
     @classmethod
     def validate_credits(cls, v: float) -> float:
         """Credits must be a number between 0.5 and 4.0."""
-        if not (0.5 <= v <= 4.0):
+        if not (0 <= v <= 4.0):
             raise ValueError("credits must be between 0.5 and 4.0")
         return v
     
@@ -97,5 +97,23 @@ class SectionRow(BaseModel):
             raise ValueError("times should be in the format HH:MM AM/PM")
         return v
     
-
+    @field_validator("room")
+    @classmethod
+    def validate_room(cls, v: Optional[str]) -> Optional[str]:
+        '''Rooms should be a capitalized word followed by a space and a number.'''
+        if v == "TBA" or v is None:
+            return None
+        elif not re.fullmatch(r"[A-Z]*\s\d+\b", v):
+            raise ValueError("Rooms should be a capitalized word followed by a space and a number.")
+        return v
+    
+    @field_validator("tags")
+    @classmethod
+    def validate_tags(cls, v: Optional[str]) -> Optional[str]:
+        '''Tags, if they are present, should be a comma-separated list of words/numbers.'''
+        if v is None:
+            return None
+        if not re.fullmatch(r"^\w+(?:,\s*\w+)*$", v):
+            raise ValueError("Tags should be words, seperated by commas")
+        return v
     # Add other validators here as needed
