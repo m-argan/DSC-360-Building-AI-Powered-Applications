@@ -29,7 +29,7 @@ from schema import SectionRow
 MODEL = "gemma3:12b"
 
 def extract_structured_record(line: str) -> SectionRow:
-    print("ll",line)
+    #print("ll",line)
     """
     Use an LLM to extract structured data for one course listing.
 
@@ -43,8 +43,9 @@ def extract_structured_record(line: str) -> SectionRow:
     schema = SectionRow.model_json_schema()
     SYSTEM_MSG = f"""extract structured course data from the following line according to the format, and respond in JSON format. The only fields which will have dashes
     is "days", which will be formatted using letters and dashes, letters (either M,W,F,T or R) to represent days of the week when class is being taught, 
-    and dashes to represent days when class is not being taught. For example, -M-W-F- means class is being taught only on Monday, Wednesday, and Friday. Here is an example of a 
-    line you might receive: 'THR 111 Lighting Practicum 1.0 A. Kuznetsova 8:00-9:00AM ------- OLIN 128', and here is an example of 
+    and dashes to represent days when class is not being taught. For example, -M-W-F- means class is being taught only on Monday, Wednesday, and Friday. the "room" field
+    will be comprised of a building code, in all caps, and a room number. The room should always end with a number, anything that comes after the room number should be considered as a tag.
+    Here is an example of a line you might receive: 'THR 111 Lighting Practicum 1.0 A. Kuznetsova 8:00-9:00AM ------- OLIN 128', and here is an example of 
     a properly formatted response: 
     {{'program': 'THR', 
     'number': '111',
@@ -83,7 +84,7 @@ def extract_structured_record(line: str) -> SectionRow:
 
     content = resp["message"]["content"]
     data = json.loads(content)
-    print("response", content)
+    #print("response", content)
     '''
     response = ollama.chat(messages = [{"role" : "user", "content" : prompt}], model = MODEL, format = schema)
 
@@ -120,28 +121,30 @@ def process_file(in_path: str, out_path: str):
         
         # Write CSV header based on schema fields
         writer.writerow(SectionRow.model_fields.keys())
-
+        failures = []
         count = 0
-        limit = 5  # set a small limit for debugging; change to -1 for no limit ...
+        #limit = 4  # set a small limit for debugging; change to -1 for no limit ...
 
         for line in fin:
+            print("line number ",count+1,": ",line)
             if not line.strip():
                 continue
 
-            if count >= limit:  # or you could just remove these two lines for no limit
-                break
+            #if count >= limit:  # or you could just remove these two lines for no limit
+            #    break
 
             try:
                 record = extract_structured_record(line)
-                print("record:", record)
+                #print("record:", record)
                 # Optional: view the validated record for debugging
-                print("worked!",record.model_dump_json(indent=2))
+                #print("worked!",record.model_dump_json(indent=2))
 
                 writer.writerow(record.model_dump().values())
 
             except ValidationError as e:
                 print("Validation test failed — skipping this line.")
                 print(f"  Input: {line.strip()}")
+                failures.append((count))
                 for err in e.errors():
                     loc = ".".join(str(x) for x in err["loc"])
                     msg = err["msg"]
@@ -153,11 +156,12 @@ def process_file(in_path: str, out_path: str):
                 print(f"  {type(e).__name__}: {e}")
 
             count += 1
-
+        print(f"Processed {count} lines with {len(failures)} failures.")
+        print("Failed line numbers:", failures)
 
 if __name__ == "__main__":
     # Process training data (Part 1)
-    process_file("raw/training.txt", "out/sections_train.csv")
+    #process_file("raw/training.txt", "out/sections_train.csv")
 
     # Later, after refinement, uncomment to process the test set (Part 2)
-    #process_file("raw/testing.txt", "out/sections_test.csv")
+    process_file("raw/testing.txt", "out/sections_test.csv")

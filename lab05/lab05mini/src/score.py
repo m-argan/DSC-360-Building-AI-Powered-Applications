@@ -65,6 +65,7 @@ def main():
 
     # Row-level EM
     row_em = matches.all(axis=1).mean()
+    print(row_em)
     print(f"\nRow-level EM: {row_em:.2f}")
 
 
