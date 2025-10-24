@@ -37,6 +37,8 @@ import pandas as pd
 
 
 def main():
+    
+    
     # Check that the student has completed Part 1 and generated test output
     if not os.path.exists("out/sections_test.csv"):
         print("⚠️  No test output found.")

@@ -41,34 +41,36 @@ def extract_structured_record(line: str) -> SectionRow:
       - Validate the result with SectionRow(**data).
     """
     schema = SectionRow.model_json_schema()
-    SYSTEM_MSG = f"""extract structured course data from the following line according to the format, and respond in JSON format. The only fields which will have dashes
-    is "days", which will be formatted using letters and dashes, letters (either M,W,F,T or R) to represent days of the week when class is being taught, 
-    and dashes to represent days when class is not being taught. For example, -M-W-F- means class is being taught only on Monday, Wednesday, and Friday. the "room" field
-    will be comprised of a building code, in all caps, and a room number. The room should always end with a number, anything that comes after the room number should be considered as a tag.
-    Here is an example of a line you might receive: 'THR 111 Lighting Practicum 1.0 A. Kuznetsova 8:00-9:00AM ------- OLIN 128', and here is an example of 
+    SYSTEM_MSG = f"""extract structured course data from the following line according to the format, and respond in JSON format. 
+    The information in the line will come in the following order: program, number, title, credits, section, faculty, times, days, room, tags.
+    The days field will be a string included in the following list: ['-M-W-F-', '--T-R--', '--T----', '----R--', '-M-----', '-----F-', '-M-W--', '--W--F-', '---W---', '-------']. If 
+    days is '-------', it means the course does not have scheduled meeting days, and you should set days to null in your response.
+    The "room" field will be comprised of a building code, in all caps, and a room number. The room should always end with a number, anything that comes after the room number should be considered as a tag.
+    The 'faculty' field will contain the first initial of the instructor, followed by a period, a space, and then their last name (e.g., 'J. Smith').
+    Here is an example of a line you might receive: 'THR 111 Lighting Practicum 1.0 b A. Kuznetsova 8:00-9:00AM ------- OLIN 128', and here is an example of 
     a properly formatted response: 
     {{'program': 'THR', 
     'number': '111',
-    'section': None,
+    'section': 'b',
     'title': 'Lighting Practicum',
     'credits': 1.0,
-    'days': -------,
-    'times': 8:00-9:00AM,
+    'days': '-------',
+    'times': '8:00-9:00AM',
     'room': OLIN 128,
     'faculty': 'A. Kuznetsova',
     'tags': None}}. Here is another example line: CHE 132L CHE 132 Lab 0 a E. Wachter 8:00-11:00AM --T---- YOUN 202. Here is the properly formatted response for that line:
     {{'program': 'CHE', 
     'number': '132L',
-    'section': a,
+    'section': 'a',
     'title': 'CHE 132 Lab',
     'credits': 0.0,
-    'days': --T----,
-    'times': 8:00-11:00AM,
-    'room': YOUN 202,
+    'days': '--T----',
+    'times': '8:00-11:00AM',
+    'room': 'YOUN 202',
     'faculty': 'E. Wachter',
     'tags': None}}. 
-    A proper JSON response must include all fields from the following schema:{schema}. The JSON response must include program, number, section, title, credits, 
-    days, times, room, faculty and tags, IN THAT ORDER. If section is not present, include it in the response and set it to null."""
+    A proper JSON response MUST include ALL fields from the following schema:{schema}. The JSON response must include program, number, section, title, credits, 
+    days, times, room, faculty and tags, IN THAT ORDER. If section is not present or marked "TBD", include it in the response and set it to null."""
 
     USER_TEMPLATE = 'You have been provided a line of course information which is formatted in the following way: program, number, title, credits, section' \
     'faculty, times, days, room, tags. Extract structured course data from this line according to the format, and provide the response in JSON format:'+ line+'.'
@@ -84,7 +86,7 @@ def extract_structured_record(line: str) -> SectionRow:
 
     content = resp["message"]["content"]
     data = json.loads(content)
-    #print("response", content)
+    print("response", content)
     '''
     response = ollama.chat(messages = [{"role" : "user", "content" : prompt}], model = MODEL, format = schema)
 
@@ -108,7 +110,8 @@ def extract_structured_record(line: str) -> SectionRow:
         "faculty": "",
         "tags": None,
     }'''
-    return SectionRow(**data)
+    
+    return SectionRow.model_validate_json(content)
 
 
 def process_file(in_path: str, out_path: str):
@@ -143,6 +146,7 @@ def process_file(in_path: str, out_path: str):
 
             except ValidationError as e:
                 print("Validation test failed — skipping this line.")
+                print("line that failed:", line)
                 print(f"  Input: {line.strip()}")
                 failures.append((count))
                 for err in e.errors():
@@ -164,4 +168,5 @@ if __name__ == "__main__":
     #process_file("raw/training.txt", "out/sections_train.csv")
 
     # Later, after refinement, uncomment to process the test set (Part 2)
+    #process_file("raw/testing.txt", "out/sections_test.csv")
     process_file("raw/testing.txt", "out/sections_test.csv")

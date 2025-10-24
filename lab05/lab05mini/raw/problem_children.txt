@@ -1,0 +1,13 @@
+THR 103 Modern Dance Performance 1 a Stephenson/Tomb 5:30-7:00PM --T-R-- GRNT 502
+THR 113 Special Topics in Production 1 a A. Kuznetsova TBA -------
+THR 110 Scenic Practicum 1 b A. Kuznetsova TBA -------
+THR 113 Special Topics in Production 1 b A. Kuznetsova TBA -------
+THR 112 Costume Practicum 1 a A. Kuznetsova TBA -------
+CHE 132 General Chemistry-II 4 b K. Fulfer 10:20-11:20AM -M-W-F- OLIN 009 E3
+CSC 360 Software Design 3 a M. Bradshaw 8:00-9:00AM -M-W-F- OLIN 201
+DSC 340 Applied Machine Learning 3 a T. Allen 11:30-12:30PM -M-W-F- OLIN 208
+ECO 280 Data Analysis & Communication 3 c S. Davis 1:50-2:50PM -M-W-F- YOUN 102
+THR 112 Costume Practicum 1 b A. Kuznetsova TBA -------
+BIO 110L BIO 110 Lab 0 c C. O'Quin 8:00-11:00AM ----R-- YOUN 206
+BIO 500 Senior Seminar 3 a M. Galatowitsch 1:50-3:20PM -M-W--- TBA
+REL 249 Material Arts and East Asian Spiritual Traditions 3 a B. Bae 2:10-3:50PM --T-R-- OLIN 124 E2

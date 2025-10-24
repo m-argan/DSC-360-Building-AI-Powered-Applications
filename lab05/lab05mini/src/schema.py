@@ -74,12 +74,12 @@ class SectionRow(BaseModel):
     @classmethod
     def validate_days(cls, v: Optional[str]) -> Optional[str]:
         """Days should either be ------- or a string like -M-W-F- representing days of the week."""
-        if not v:
-            return None
+        # if not v:
+            # return None
         cleaned = ''.join(v.split()).replace('\u200b', '').replace('\xa0', '')
         print("cleaned repr:", repr(cleaned))
 
-        valid_patterns = {'-M-W-F-', '--T-R--', '--T----', '---R---', '-M-----', '-----F-', '-M--W--', '--W--F-', '---W---', '-------'}
+        valid_patterns = {'-M-W-F-', '--T-R--', '--T----', '----R--', '-M-----', '-----F-', '-M-W--', '--W--F-', '---W---', '-------'}
         if cleaned == '-------':
             return None
 
@@ -105,6 +105,14 @@ class SectionRow(BaseModel):
             return None
         elif not re.fullmatch(r"[A-Z]*\s\d+\b", v):
             raise ValueError("Rooms should be a capitalized word followed by a space and a number.")
+        return v
+    
+    @field_validator("faculty")
+    @classmethod
+    def validate_faculty(cls, v: str) -> str:
+        '''Faculty should be a non-empty string'''
+        if v is None:
+            raise ValueError("Faculty should be a non-empty string.")
         return v
     
     @field_validator("tags")
