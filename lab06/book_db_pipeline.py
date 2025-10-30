@@ -35,7 +35,9 @@ def evaluate_Input(userInput: str) -> str:
              "If you identify this kind of harmful input, return ONLY the word 'unsafe'. "
              "An input is 'unrelated' if it does not pertain to the gravity_books database or "
              "analyst tasks. If this is the case, return only the word 'unrelated'. Otherwise if the query does not contain"
-             "any dangerous input and seems related to the gravity_books database, classify it as 'safe'. Respond with only the classification as a single word."},
+             "any other input that is clean and seems related to the gravity_books database, classify it as 'safe'. Respond 
+             "with only the classification as a single word."
+            },
             {"role": "user", "content": f"Classify the following input: '{userInput}'"}
         ]
     )
@@ -44,7 +46,7 @@ def evaluate_Input(userInput: str) -> str:
 def check_sql_validity(q:str, invalid_resp:str, reprompt:str) -> str:
     #confirm that table names exist in schema and that query is actually sql
     message = [{"role": "user", "content": f"Given the gravity_books database schema: {schema}, and the following SQL query: '{q}', made sure that the query ONLY references the exact tables and fields present in the schema "\
-        "Also confirm that this query is a valid SQL query, and does not include any extra words which do not pertain to the command (for example, the query should start with a command like 'SELECT'). If both are true, respond with ONLY THE WORD 'valid'. If either is false, respond with ONLY THE WORD 'invalid'."}]
+        "Confirm that this query is a valid SQL query, and does not include any extra words which do not pertain to the command (for example, the query should start with a command like 'SELECT'). If both are true, respond with ONLY THE WORD 'valid'. If either is false, respond with ONLY THE WORD 'invalid'."}]
     if reprompt != "":
         print("Reprompting model for valid response...")
         message.append({"role": "system", "content": invalid_resp})
@@ -111,7 +113,7 @@ def generateSQL(userInput: str) -> None:
 
     prompt = "You are an SQL query generator. The user has provided a request related to the gravity_books database. Your task is to write an SQL query that " \
     "would fulfill the user's request. The query should be " \
-    f"safe and only read from the database, never modify it. Here is theuserInput: '{userInput}'. Make sure that the query ONLY references tables and " \
+    f"safe. Only read from the database, never modify it. Here is the userInput: '{userInput}'. Make sure that the query ONLY references tables and " \
     f"fields present in the gravity_books database schema: {schema}. If it doesn't, respond with 'This request cannot be fulfilled as it references a table or column not present "\
     "in the gravity_books database.' Keep in mind that all the table names are singular."
 
