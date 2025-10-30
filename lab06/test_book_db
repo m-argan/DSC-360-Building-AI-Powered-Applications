@@ -1,0 +1,39 @@
+import unittest
+from book_db_pipeline import validate, check_sql_validity
+
+class TestStringMethods(unittest.TestCase):
+
+    # check code fences are removed
+    def test_validate(self):
+        obj = validate("Get all book titles", "```SELECT title FROM book;```")
+        expected = {"query": "Get all book titles", "sql": "SELECT title FROM book;"}
+        self.assertEqual(obj, expected)
+
+    # remove unsafe keywords
+    def test_validate_del(self):
+        obj = validate("remove all book titles", "DELETE title FROM book;")
+        self.assertIsNone(obj)
+
+    # check table names exist in schema
+    def test_validate_table_invalid(self):
+        obj = validate("Get all book titles", "SELECT title FROM non_existent_table;")
+        self.assertIsNone(obj)
+
+    def test_validate_table_invalid2(self):
+        obj = validate("Get all book titles", "sql SELECT title FROM non_existent_table;")
+        self.assertIsNone(obj)
+
+    def test_validate_table_invalid2(self):
+        obj = validate("Get all book titles", "sql SELECT title FROM non_existent_table;")
+        self.assertIsNone(obj)
+
+    def test_validate_table_valid(self):
+        obj = validate("Get all author ids", "SELECT author_id FROM book_author;")
+        expected = {"query": "Get all author ids", "sql": "SELECT author_id FROM book_author;"}
+        self.assertEqual(obj, expected)
+
+    
+
+    # to do: find a way to test reprompting behavior
+if __name__ == '__main__':
+    unittest.main()
