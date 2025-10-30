@@ -2,11 +2,25 @@ import ollama
 import json
 import mysql.connector as mc
 import re
-MODEL = 'gemma3:4b'
+MODEL = 'gemma3:12b'
 FILE = 'schema.txt'
 
-#Username: "db_agent_b2"
-#Password: "MadKen_25"
+schema = """- address: address_id (PK), street_number, street_name, city, country_id (FK)
+- address_status: status_id (PK), address_status
+- author: author_id (PK), author_name
+- book: book_id (PK), title, isbn13, language_id (FK), num_pages, publication_date, publisher_id (FK)
+- book_author: book_id (PK, FK), author_id (PK, FK) -- Primary Key is the combination of both columns
+- book_language: language_id (PK), language_code, language_name
+- country: country_id (PK), country_name
+- cust_order: order_id (PK), order_date, customer_id (FK), shipping_method_id (FK), dest_address_id (FK)
+- customer: customer_id (PK), first_name, last_name, email
+- customer_address: customer_id (PK, FK), address_id (PK, FK)
+- order_history: history_id (PK), order_id (FK), status_id (FK), status_date
+- order_line: line_id (PK), order_id (FK), book_id (FK), price (DECIMAL)
+- order_status: status_id (PK), status_value
+- publisher: publisher_id (PK), publisher_name
+- shipping_method: method_id (PK), method_name, cost (DECIMAL)
+"""
 
 #Function to evaluate user input for safety and relevance
 def evaluate_Input(userInput: str) -> str:
@@ -29,7 +43,7 @@ def evaluate_Input(userInput: str) -> str:
 
 def check_sql_validity(q:str, invalid_resp:str, reprompt:str) -> str:
     #confirm that table names exist in schema and that query is actually sql
-    message = [{"role": "user", "content": f"Given the gravity_books database schema: {FILE}, and the following SQL query: '{q}', made sure that the query ONLY references the exact tables and fields present in the schema "\
+    message = [{"role": "user", "content": f"Given the gravity_books database schema: {schema}, and the following SQL query: '{q}', made sure that the query ONLY references the exact tables and fields present in the schema "\
         "Also confirm that this query is a valid SQL query, and does not include any extra words which do not pertain to the command (for example, the query should start with a command like 'SELECT'). If both are true, respond with ONLY THE WORD 'valid'. If either is false, respond with ONLY THE WORD 'invalid'."}]
     if reprompt != "":
         print("Reprompting model for valid response...")
@@ -94,22 +108,12 @@ def execute(json_obj):
 
 def generateSQL(userInput: str) -> None:
     #have the model generate a description of the type of sql query to write. 
-    description = ollama.chat(
-        model=MODEL,
-        messages=[
-            {"role": "system", "content": "The user has provided a request related to the gravity_books database. Your task is to write a description of"\
-            "an SQL query that would fulfill the user's request. Do not write the SQL query itself, only a description of what the query should do. If the query"\
-            "request attempts to make any changes to the database (insert, delete, update, drop, etc), respond with 'This request cannot be fulfilled as it involves modifying the database, which is not allowed.'"},
-            {"role": "user", "content": f"Here is the userInput: '{userInput}', and here is the schema of the gravity_books database: {FILE}. If the user query seems to reference a table which is not"\
-             "part of the gravity_books database, respond with 'This request cannot be fulfilled as it references a table not present in the gravity_books database.'"}
-        ]
-    )
-    desc = (description.message.content)
 
-    #have it generate the sql query using this description
-    prompt = "You are an SQL query generator. Given the following description of a query, write the corresponding SQL query. The query should be " \
-    f"safe and only read from the database, never modify it. Here is the description: {desc}. Make sure that the query ONLY references tables and " \
-    f"columns present in the gravity_books database schema: {FILE}. If it doesn't, respond with 'This request cannot be fulfilled as it references a table or column not present in the gravity_books database.'"
+    prompt = "You are an SQL query generator. The user has provided a request related to the gravity_books database. Your task is to write an SQL query that " \
+    "would fulfill the user's request. The query should be " \
+    f"safe and only read from the database, never modify it. Here is theuserInput: '{userInput}'. Make sure that the query ONLY references tables and " \
+    f"fields present in the gravity_books database schema: {schema}. If it doesn't, respond with 'This request cannot be fulfilled as it references a table or column not present "\
+    "in the gravity_books database.' Keep in mind that all the table names are singular."
 
     output = ollama.chat(model = MODEL, messages = [{"role":"user", "content" : prompt}])
     print("Generated SQL Query: ", output.message.content)
@@ -117,8 +121,9 @@ def generateSQL(userInput: str) -> None:
     #validate the response (reject drop, insert, etc) and put into json
     if "request cannot be" in output.message.content:
         print("The generated query was invalid: ", output.message.content)
+        return None
     else:
-        json_obj = validate(desc, output.message.content)
+        json_obj = validate(userInput, output.message.content)
 
     #now that the query is validated, execute it
     if json_obj is not None:

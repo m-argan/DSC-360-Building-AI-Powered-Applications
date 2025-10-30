@@ -1,12 +1,4 @@
-Simplified Database Views for NL→SQL
-
-- v_books: book_id (PK), title, publisher, language, publication_date, num_pages, authors (CSV)
-- v_orders: order_id (PK), order_date, customer_id (FK), customer_name, email_masked, shipping_method, order_status, order_total (DECIMAL)
-- v_order_items: line_id (PK), order_id (FK), book_id (FK), title, publisher, line_total (DECIMAL)
-- v_customers: customer_id (PK), name, email_masked
-- v_sales_by_book: book_id (PK), title, publisher, units (INT), revenue (DECIMAL)
-
-Base Tables for the database
+#Here are the tables and fields which exist in the database, organized in the following way - table_name: field_1, field_2
 
 - address: address_id (PK), street_number, street_name, city, country_id (FK)
 - address_status: status_id (PK), address_status
