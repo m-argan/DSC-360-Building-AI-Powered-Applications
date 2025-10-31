@@ -33,7 +33,8 @@ def evaluate_Input(userInput: str) -> str:
 def check_sql_validity(q:str, invalid_resp:str, reprompt:str) -> str:
     #confirm that table names exist in schema and that query is actually sql
     message = [{"role": "user", "content": f"Given the gravity_books database schema: {schema}, and the following SQL query: '{q}', made sure that the query ONLY references the exact tables and fields present in the schema "\
-        "Confirm that this query is a valid SQL query, and does not include any extra words which do not pertain to the command (for example, the query should start with a command like 'SELECT'). If both are true, respond with ONLY THE WORD 'valid'. If either is false, respond with ONLY THE WORD 'invalid'."}]
+        "Confirm that this query is a valid SQL query, and does not include any extra words which do not pertain to the command (for example, the query should start with a command like 'SELECT'). If both are true, respond with ONLY THE WORD 'valid'. "
+        "If either is false, respond with ONLY THE WORD 'invalid'. You should also return invalid if the query includes a subquery."}]
     if reprompt != "":
         print("Reprompting model for valid response...")
         message.append({"role": "system", "content": invalid_resp})
@@ -74,31 +75,43 @@ def validate(description, query):
         isvalid = check_sql_validity(q, isvalid, "This response is invalid because it contains words other than 'valid' or 'invalid'. Please respond with only one of these two words.")
         return None
 
-def execute(json_obj):
+def execute(json_obj, limit) -> list:
     to_execute = json_obj['sql']
+    q = json_obj['query']
     print("Executing SQL Query: ", to_execute)
     #establish connection
     conn = mc.connect(
     host="cscdata.centre.edu",
-    user="db_agent_b2",        # change per team
-    password="MadKen_25",  # your team's password
+    user="db_agent_b2",
+    password="MadKen_25",
     database="gravity_books"
 )
     # initialize cursor
     cur = conn.cursor()
 
-    #execute command (automatically adds a limit of 30 to prevent resource drain)
+    #execute command (automatically adds a limit to prevent resource drain)
     cur.execute(to_execute)
-    table = cur.fetchall()
-    #print("tab",table)
-    results = table[30:]
-    #print("res",results)
+
+    results = []
+    row = cur.fetchone()
+    i = 0
+    while i < limit:
+        results.append(row)
+        row = cur.fetchone()
+        i += 1
+        #results.append(row)
+        #i += 1
+    
+    print("results",results)
 
     #return plain text results
-    output = ollama.chat(model = MODEL, messages = [{"role":"user", "content" : f"Provided is a user query : {userInput} and the "\
+    output = ollama.chat(model = MODEL, messages = [{"role":"user", "content" : f"Provided is a user query : {q} and the "\
     f"answer to the question {results}. Summarize the results in a clear and concise manner for the user."\
-    "You do not need to provide the user with any more information that what is contained in the results."}])
+    "You do not need to provide the user with any more information than what is contained in the results."}])
     print(output.message.content)
+
+    #return result for testing purposes
+    return results
     
 def generateSQL(userInput: str) -> None:
     #have the model generate a description of the type of sql query to write. 
@@ -110,7 +123,7 @@ def generateSQL(userInput: str) -> None:
     "in the gravity_books database.' Keep in mind that all the table names are singular. If the request contains more than 30 elements, include a LIMIT 30 at the end of the query."
 
     output = ollama.chat(model = MODEL, messages = [{"role":"user", "content" : prompt}])
-    print("Generated SQL Query: ", output.message.content)
+    #print("Generated SQL Query: ", output.message.content)
 
     #validate the response (reject drop, insert, etc) and put into json
     if "request cannot be" in output.message.content:
@@ -121,7 +134,7 @@ def generateSQL(userInput: str) -> None:
 
     #now that the query is validated, execute it
     if json_obj is not None:
-        execute(json_obj)
+        execute(json_obj, 3)
 
 #REPL
 if __name__ == "__main__":

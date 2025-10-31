@@ -1,5 +1,5 @@
 import unittest
-from book_db_pipeline import validate ,evaluate_Input, generateSQL
+from book_db_pipeline import validate ,evaluate_Input, generateSQL, execute
 
 class TestStringMethods(unittest.TestCase):
 
@@ -31,6 +31,9 @@ class TestStringMethods(unittest.TestCase):
         obj = validate("Get all author ids", "SELECT author_id FROM book_author;")
         expected = {"query": "Get all author ids", "sql": "SELECT author_id FROM book_author;"}
         self.assertEqual(obj, expected)
+    
+    # test for subqueries
+
 
     # test safety check function
     def test_evaulate_input_unsafe(self):
@@ -58,11 +61,43 @@ class TestStringMethods(unittest.TestCase):
         expected = "safe"
         self.assertEqual(output, expected)
 
-    #dsds
-    def limit(self):
-        generateSQL("List all book titles, in order alphabetically.")
-        expected = "safe"
+    #check the limit
+    def test_limit(self):
+        sql = """SELECT
+        title
+        FROM book
+        WHERE
+        title LIKE 'a%'
+        ORDER BY
+        title"""
+        json_obj = {"query": "List all book titles starting with a, in order alphabetically.", "sql": sql}
+        result = execute(json_obj, 5)
+        expected = [('A Backward Glance',), ('A Beautiful Mind',), ('A Bend in the River',), ('A Bend in the Road',), ('A Birthday for Frances',)]
+        self.assertEqual(result, expected)
 
+    #test more complex query with join
+    def test_join(self):
+        sql = """
+            SELECT
+                b.title,
+                a.author_name
+            FROM book AS b
+            JOIN book_author AS ba
+                ON b.book_id = ba.book_id
+            JOIN author AS a
+                ON ba.author_id = a.author_id
+            WHERE
+                b.title LIKE 'Z%'
+            LIMIT 3;
+            """
+        json_obj = {"query": "list 3 books starting with the letter z and their authors", "sql": sql}
+        result = execute(json_obj, 3)
+        expected = [("Zelda's Cut", 'Philippa Gregory'),('Zen and the Art of Motorcycle Maintenance: An Inquiry Into Values (Phaedrus  #1)', 'Robert M. Pirsig'), ('Zorro', 'Isabel Allende')]
+        # ('Zelda's Cut','Philippa Gregory')
+        self.assertEqual(result, expected)
+
+    
+    
     # to do: find a way to test reprompting behavior
 if __name__ == '__main__':
     unittest.main()
