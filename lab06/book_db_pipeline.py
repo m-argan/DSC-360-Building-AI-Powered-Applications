@@ -89,7 +89,7 @@ def execute(json_obj, limit) -> list:
     # initialize cursor
     cur = conn.cursor()
 
-    #execute command (automatically adds a limit to prevent resource drain)
+    #execute command 
     cur.execute(to_execute)
 
     results = []
@@ -132,9 +132,9 @@ def generateSQL(userInput: str) -> None:
     else:
         json_obj = validate(userInput, output.message.content)
 
-    #now that the query is validated, execute it
+    #now that the query is validated, execute it (automatically adds a limit to prevent resource drain)
     if json_obj is not None:
-        execute(json_obj, 3)
+        execute(json_obj, 30)
 
 #REPL
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 import unittest
-from book_db_pipeline import validate ,evaluate_Input, generateSQL, execute
+from book_db_pipeline import validate ,evaluate_Input, check_sql_validity, execute
 
 class TestStringMethods(unittest.TestCase):
 
@@ -96,8 +96,26 @@ class TestStringMethods(unittest.TestCase):
         # ('Zelda's Cut','Philippa Gregory')
         self.assertEqual(result, expected)
 
+    #test subquery rejection
+    def test_subquery(self):
+        sql = """
+            SELECT
+                title
+            FROM book
+            WHERE
+                book_id IN (
+                    SELECT
+                        book_id
+                    FROM book_author
+                    WHERE
+                        author_id = 10
+                )
+            LIMIT 2;
+            """
+        result = check_sql_validity(sql, "", "")
+        expected = "invalid"
+        self.assertEqual(result, expected)
     
     
-    # to do: find a way to test reprompting behavior
 if __name__ == '__main__':
     unittest.main()
