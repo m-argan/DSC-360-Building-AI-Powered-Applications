@@ -33,8 +33,8 @@ def evaluate_Input(userInput: str) -> str:
 def check_sql_validity(q:str, invalid_resp:str, reprompt:str) -> str:
     #confirm that table names exist in schema and that query is actually sql
     message = [{"role": "user", "content": f"Given the gravity_books database schema: {schema}, and the following SQL query: '{q}', made sure that the query ONLY references the exact tables and fields present in the schema "\
-        "Confirm that this query is a valid SQL query, and does not include any extra words which do not pertain to the command (for example, the query should start with a command like 'SELECT'). If both are true, respond with ONLY THE WORD 'valid'. "
-        "If either is false, respond with ONLY THE WORD 'invalid'. You should also return invalid if the query includes a subquery."}]
+        "Confirm that this query is a valid SQL query, uses proper syntax, and does not include any extra words which do not pertain to the command (for example, the query should start with a command like 'SELECT'). If both are true, respond with ONLY THE WORD 'valid'. "
+        "If either is false, respond with ONLY THE WORD 'invalid'. Also, be sure that the query does not attempt to modify the database in any way (if it does, you should return invalid. You should also return invalid if the query includes a subquery."}]
     if reprompt != "":
         print("Reprompting model for valid response...")
         message.append({"role": "system", "content": invalid_resp})
@@ -46,14 +46,13 @@ def check_sql_validity(q:str, invalid_resp:str, reprompt:str) -> str:
     return resp.message.content
 
 def validate(description, query):
-    ## TODO: should also make sure it doesn't have a subquery (;)
     print("Validating generated SQL query...")
     #remove code fences in query
     clean = query.replace("`", "")
     #removes leading 'sql ' if present
     q = clean.replace("sql", "")
 
-    #print("Cleaned SQL Query: ", q)
+    print("Cleaned SQL Query: ", q)
     #check for unsafe keywords in query
     if re.search(r"\b(DELETE|INSERT|UPDATE|DROP|ALTER|TRUNCATE|CREATE|REPLACE|GRANT|REVOKE|EXECUTE|CALL|MERGE|LOCK|UNLOCK)\b", q, re.IGNORECASE):
         print("Unsafe keyword detected in query, please revise your request")
@@ -90,7 +89,11 @@ def execute(json_obj, limit) -> list:
     cur = conn.cursor()
 
     #execute command 
-    cur.execute(to_execute)
+    try:
+        cur.execute(to_execute)
+    except:
+        print("An error occurred while executing the SQL query. Please revise your request.")
+        return None
 
     results = []
     row = cur.fetchone()
