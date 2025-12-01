@@ -6,11 +6,11 @@ INPUT_CSV = "book.txt"
 
 book = pd.read_csv(INPUT_CSV)
 
- thisdict = {
+def thisdict = {
   "brand": "Ford",
   "model": "Mustang",
   "year": 1964
-}
+  }
 
 def chunk(book) -> dict:
    thisdict = {
@@ -19,4 +19,4 @@ def chunk(book) -> dict:
     "start": 1964,
     "end": 222,
     "embedding vector": 
-}
+  }

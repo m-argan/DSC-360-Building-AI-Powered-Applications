@@ -1,0 +1,6 @@
+Statement,Expected Index,Hit@K?
+"I think my parents hate me, I'm probably a bad person",4,True
+"I feel like my parents hate me, I'm probably a bad person",4,True
+"My partner is upset, I'm always ruining things",5,True
+"If I don’t do this perfectly, I’m a failure",0,True
+I didn’t get the job — I’ll never succeed at anything.,1,True
