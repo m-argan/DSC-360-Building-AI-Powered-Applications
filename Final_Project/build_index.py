@@ -5,11 +5,12 @@ import ollama
 MODEL = 'qwen3-embedding:8b'
 FILE = 'index/faqs.txt'
 
+# Helper functions to do embedding and add the vectors to the embedding file
+# Performed in advance to create both the faq_embeddings.npy file, and the chunked_per_distortion.npy file
+
 def add_to_em_file(twodlist):
     numpy = np.array(twodlist)
     np.save('index/faq_embeddings.npy', numpy)
-
-
 
 def embed(em, text):
     resp = ollama.embed(model=MODEL, input=text)
