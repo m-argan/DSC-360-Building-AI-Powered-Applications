@@ -128,7 +128,8 @@ def advice_for_faq(index):
             return line
         
 def launch():
-    intro = "Hello! How can I assist you today? /q to exit"
+    intro = "Hello! How can I assist you today? /q to exit. \nKeep in mind that generated responses may be " \
+    "inaccurate, be sure to fact-check important info."
     print(intro)
     prompt = ""
     strikes = 0
