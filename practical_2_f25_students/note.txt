@@ -1,1 +1,0 @@
-I'm not sure if index.py and ask.py work, i didn't have time to re-run the embeddings to check
