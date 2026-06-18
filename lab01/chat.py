@@ -1,5 +1,4 @@
 import ollama
-import re
 import os
 import datetime
 from datetime import date
@@ -32,7 +31,7 @@ def queryOllama(prompt: str, context: str, modelName: str, FILE: str) -> str:
     # immediately add user's input to the conversation history and transcript
     context.append({"role":"user", "content" : prompt})
     addtoFile(prompt, "user", FILE)
-    # prompt model to recieve history and respond accordingly
+    # prompt model to receive history and respond accordingly
     contextPrompt = ("you are having a conversation with a user. respond to their prompt while taking into account the context of the conversation up until this point. Here is the conversation history: ", context, ' and here is the new prompt: ', prompt)
     strPrompt = ' '.join(str(val) for val in contextPrompt)
     try:
@@ -40,12 +39,11 @@ def queryOllama(prompt: str, context: str, modelName: str, FILE: str) -> str:
         assistantoutput = {"role":"assistant", "content" : output.message.content}
         # add assistant response to transcript
         addtoFile(output.message.content, modelName, FILE)
-    except ollama.ResponseError as e:
-        print("Error ", e.error)
-
-    # add response to history and print to terminal
-    context.append(assistantoutput)
-    print(output.message.content)
+        # add response to history and print to terminal
+        context.append(assistantoutput)
+        print(output.message.content)
+    except Exception as e:
+        print("Error: Ensure you have the model you are intending to use installed: https://ollama.com/library", e.error)
 
     return context
     
@@ -75,7 +73,6 @@ def startTranscript() -> str:
     # Create folder for the day
     directoryPath = date_with_dashes
     strDirectoryPath = ''.join(str(item) for item in directoryPath)
-    print(strDirectoryPath)
 
     try:
         os.makedirs(strDirectoryPath, exist_ok=True)
@@ -91,7 +88,7 @@ def main():
     userInput = ""
     context = ["conversation history:"]
     MODEL = "gemma3:1b"
-    print("Welcome! I am a chatbot! I live to serve, ask me anything! Press /exit to stop and /model to switch models")
+    print("Welcome! I am a chatbot! I live to serve, ask me anything! Press /exit to stop, /new to clear conversation history, and /model <modelname> to switch models")
     FILE = startTranscript()
 
     while True:
@@ -107,6 +104,7 @@ def main():
                 model = extractModel(userInput)
                 MODEL = model
                 print("changed to ", MODEL, "model")
+                continue
             context = queryOllama(userInput, context, MODEL, FILE)
 
 main()

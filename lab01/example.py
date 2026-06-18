@@ -1,3 +1,4 @@
+## CODE WRITEN BY THOMAS ALLEN (INSTRUCTOR)
 import ollama
 import chromadb
 
