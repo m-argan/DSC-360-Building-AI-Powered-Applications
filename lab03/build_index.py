@@ -5,7 +5,6 @@ import json
 
 chunklist = chunker.main()
 MODEL = "qwen3-embedding:8b"
-#print("DICTIONARY", chunklist)
 
 #erase file if exists (only for first run to get files made)
 #file = open('chunks.jsonl', 'w')
@@ -14,11 +13,8 @@ MODEL = "qwen3-embedding:8b"
 def add_to_em_file(twodlist):
     numpy = np.array(twodlist)
     np.save('index/embeddings.npy', numpy)
-    
 
 def add_to_ch_file(twodlist, id, text, start, end, elem):
-    #chunks
-    #chunk = {"id":id, "text":text, "start":start, "end":end}
     try:
         with open('index/chunks.jsonl', 'a') as f:
             json_string = json.dumps(elem) # google ai

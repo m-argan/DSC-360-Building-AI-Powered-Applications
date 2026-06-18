@@ -11,30 +11,28 @@ MODEL = "nomic-embed-text:v1.5"
 
 prompt = input("What part of the book do you want to find? ")
 
+# Function to find the ids of the 5 most similar chunks to the prompt
 def launch(prompt) -> list:
     resp = ollama.embed(model=MODEL, input=prompt)
+    # embed and reshape the prompt to compare to the embeddings stored in embeddings.npy (created by build_index.py)
     vec = resp["embeddings"][0]  
     arr = np.array(vec)
     shapearr = arr.reshape(768,1)
-    #print(arr)
-    #rint(shapearr)
-
     data = np.load('index/embeddings.npy')
-    #print(data)
     result = np.dot(data, shapearr)
-    #print("result", result)
     flat = result.flatten()
     orderedlist = np.argsort(flat)[::-1] #google ai
     top5 = orderedlist[:5]
-    #top = np.argmax(result)
     return top5
 
 def run():
     top5 = launch(prompt)
     chunks = []
+    # convert chunks file into a list for ease of access
     with open('index/chunks.jsonl', 'r') as book:
         for line in book:
             chunks.append(line)
+    # find and return the most similar chunks
     for elem in top5:
         current = json.loads(chunks[elem])
         print('\n', current)

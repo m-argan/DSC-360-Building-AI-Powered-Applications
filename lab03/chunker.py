@@ -1,22 +1,22 @@
-import ollama
-import chromadb
 import pandas as pd
 
 FILE = "data/book.txt"
 id = 0
-def add(thelist, id, chunk, start, end) -> list:
+
+# Helper function which adds a chunk to the dictionary of chunks, formatted as a JSON object containing a chunk id, the text, and the start and end of the chunk (represented by sentence number - so the first paragraph would start at 1, and so on)
+def add(dictionary, id, chunk, start, end) -> list:
     clean_chunk = ".".join(chunk)
-    #print(clean_chunk)
     segment = {
         "id": id,
         "text": clean_chunk,
         "start": start,
         "end": end
         }
-    thelist.append(segment)
-    return thelist
+    dictionary.append(segment)
+    return dictionary
 
-def addToDict(thelist,chunk, start, end) -> list:
+# Splits larger chunks into half, then adds them to the dictionary
+def addToDict(dictionary,chunk, start, end) -> list:
    global id
    sentences = split_into_sentences(chunk)
    #If more than 5 sentences in a paragraph, split in half
@@ -27,18 +27,15 @@ def addToDict(thelist,chunk, start, end) -> list:
            half = int((len(sentences)+1)/2)
            paragraph1 = sentences[:half] # google Ai
            id+=1
-           #print("p1: " , paragraph1, "id: " , id)
            mid = (end-half)
-           add(thelist,id,paragraph1, start, mid)
+           add(dictionary,id,paragraph1, start, mid)
            paragraph2 = sentences[half:] # google Ai
            id+=1
-           #print("p2: " , paragraph2, "id: " , id)
-           add(thelist,id,paragraph2, mid+1, end)
+           add(dictionary,id,paragraph2, mid+1, end)
    else:
         id+=1
-        add(thelist, id, sentences, start, end)
-    
-   return thelist
+        add(dictionary, id, sentences, start, end)
+   return dictionary
    
 def split_into_sentences(chunk) -> list:
     sentences = chunk.split('.')
@@ -50,7 +47,7 @@ def split_into_sentences(chunk) -> list:
         
 def main() -> list:
     sent_num = 0
-    thelist = []
+    dictionary = []
     paragraph = ""
     with open(FILE, 'r') as book:
         for line in book:
@@ -63,11 +60,8 @@ def main() -> list:
                     # start is the previous length plus one (so last sentence num+1) and sent_num is the previous length plus the num of new sentences
                     start = sent_num+1
                     sent_num += length #represents 'end'
-                    addToDict(thelist,paragraph, start, sent_num)
-                    #print(sentences[-1])
+                    addToDict(dictionary,paragraph, start, sent_num)
                     paragraph = ""
-    #print(dictionary)
-    #print(thelist)
-    return thelist
+    return dictionary
 
 #main()
