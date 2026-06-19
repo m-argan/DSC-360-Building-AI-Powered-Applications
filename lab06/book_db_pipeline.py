@@ -136,21 +136,26 @@ def generateSQL(userInput: str) -> None:
         json_obj = validate(userInput, output.message.content)
 
     #now that the query is validated, execute it (automatically adds a limit to prevent resource drain)
-    if json_obj is not None:
-        execute(json_obj, 30)
+    # Can no longer connect to the gravity_books database given that it was being hosted by my university - the program will not execute the command
+    # if json_obj is not None:
+        #execute(json_obj, 30)
 
 #REPL
 if __name__ == "__main__":
     while True:
-        # add check for privacy?
-        userInput = input("Welcome to the gravity books helpdesk! Please input what you would like to lookup in the database: ").strip()
-        classification = evaluate_Input(userInput)
-        if(classification == 'unsafe'):
-            print("Your input was classified as unsafe. Remember that this is a PROFESSIONAL, LOGGED " \
-            "SYSTEM. Revise your query and try again.")
-        elif(classification == 'unrelated'):
-            print("This is system designed for analysts working with the gravity_books database. Your " \
-            "input was unrelated to this context. Please revise your query and try again.")
-        elif(classification == 'safe'):
-            print("Proceeding with query...")
-            generateSQL(userInput)
+        userInput = input("Welcome to the gravity books helpdesk! Please input what you would like to lookup in the database (/exit to quit):\n").strip()
+        if '/exit' in userInput:
+            print("Goodbye!")
+            break
+        else:
+            print("Evaluating input...")
+            classification = evaluate_Input(userInput)
+            if(classification == 'unsafe'):
+                print("Your input was classified as unsafe. Remember that this is a PROFESSIONAL, LOGGED " \
+                "SYSTEM. Revise your query and try again.")
+            elif(classification == 'unrelated'):
+                print("This is system designed for analysts working with the gravity_books database. Your " \
+                "input was unrelated to this context. Please revise your query and try again.")
+            elif(classification == 'safe'):
+                print("Proceeding with query...")
+                generateSQL(userInput)

@@ -1,4 +1,4 @@
-# test_connect.py
+## WRITTEN BY THOMAS ALLEN (INSTRUCTOR)
 
 # We will use mysql.connector as our API to interact with the MySQL database
 import mysql.connector as mc
