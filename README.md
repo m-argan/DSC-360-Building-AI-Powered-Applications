@@ -7,14 +7,15 @@
   - TO USE: Run search.py
 - Lab04- Using a specialized corpus consisting of the pandas help docs, this program takes user input and generates a specific response using the documents which had the closest cosine similarity to the prompt. The program uses a similarity threshold of 0.45, thus excluding anything with a similarity index which is too low to guarantee relevance to the user query. In the event that no relevant docs are found, the program prompts the user to revise their query. Test performed are documented in the Lab 04 Report document.
   - TO USE: Run pandoogle.py (NOTE: Because this program uses a larger model, the generation takes slightly longer (>100 seconds). For transparency, the user is updated on each step of the process through print statements.)
-- Lab05- Small extraction app which reads plain text course listings from a file, and uses a model to request structured output in the form of a properly formatted JSON object. The program also validates the result using Pydantic, and writes the output to a CSV file.
-  - TO U
-- Lab06-
+- Lab05- Small extraction app which reads plain text course listings from a file, and uses a model to request structured output in the form of a properly formatted JSON object. The program also validates the result using Pydantic, and writes the output to a CSV file. Finally, the formatted text is compared against a gold standard and scored for accuracy.
+  - TO USE: Run score.py to view the evaluation scores from within the lab05mini directory. (The text hs already been extractewd by extract.py, and the validated JSON has been added to the sextions_test.csv file)
+- Lab06- 
 - Final_Project-
 
 # Directions to Install Ollama:
 1) Create a virtual environment to install the Python client/dependencies: ```python3 -m venv myenv``` and activate it: ```source myenv/bin/activate```
-2) Install Ollama and numpy: ```pip install ollama numpy chromadb scikit-learn```
+2) Import the necessary packages: ```pip install ollama numpy chromadb scikit-learn``` (NOTE: Lab06 also requires mysql to by installed: 
+```python -m pip install --upgrade mysql-connector-python```)
 3) Install and run the Ollama daemon by following the steps on [Ollama's Website](https://ollama.com/) or pasting ```curl -fsSL https://ollama.com/install.sh | sh``` into your terminal
 4) Pull models used in the project by searching for them in [Ollama's Library](https://ollama.com/search) and copying the CLI command into the terminal. Ex: ```ollama pull nomic-embed-text-v2-moe``` Below is the list of models used for each lab, a * indicates it must be downloaded for the lab to run properly:
    - Lab01:
