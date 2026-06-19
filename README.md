@@ -11,9 +11,10 @@
 - Lab05- Small extraction app which reads plain text course listings from a file, and uses a model to request structured output in the form of a properly formatted JSON object. The program also validates the result using Pydantic, and writes the output to a CSV file. Finally, the formatted text is compared against a gold standard and scored for accuracy.
   - TO USE: Run score.py to view the evaluation scores from within the lab05mini directory. (The text hs already been extractewd by extract.py, and the validated JSON has been added to the sextions_test.csv file)
 - Lab06- NL to SQL translator with a built in input validation to screen for unsafe or irrelevant inputs, and a safety envelope to protect against prompt and SQL injection. After validating user input, the model generates an SQL query which is then validated (by checking for unsafe keywords like "DROP", "EXECUTE") and cleaned of code fences and formatting errors. Then, the query is executed and the results are summarized in plain text for the user.
-  - TO USE: Run book_db_pipeline.py (NOTE: The Gemma3:12b model performs well on 32GB ram lab machines, but can run slow on smaller machines. If the program takes too long to run, the model can be switched to gemma3:4b, which also performs adequately. Additionally, I no longer have access to the MySQL database used for this project, so the portion which executed the command on the database has been commented out, and the application only returns the SQL query).
+  - TO USE: Run book_db_pipeline.py (NOTE: The Gemma3:12b model performs well on 32GB RAM lab machines, but can run slow on smaller machines. If the program takes too long to run, the model can be switched to gemma3:4b, which also performs adequately. Additionally, I no longer have access to the MySQL database used for this project, so the portion which executed the command on the database has been commented out, and the application only returns the SQL query).
 - Final_Project- Chatbot which functions as an emotional support resource for college students, We embedded a list of FAQs and answers, and had the model build on the FAQ answer in its response if the user's input was above a 0.65 in similarity. If no FAQs matched, we used RAG with a list of common cognitive distortions and strategies to overcome them to guide generation. We also included a safety envelope to flag for inputs which were irrelevant (not related to mental support), unsafe (included a prompt injection), or dangerous (user seemed to be experiencing a crisis). We also included an output validator to ensure the model's output did not contain any medical advice or diagnoses, and used professional and formal language. 
-  - TO USE: Run chat.py
+  - TO USE: Run chat.py (NOTE: Initially, the application used the qwen3-embedding:8b. To ensure good performance on smaller machines (<32GB RAM), the model was switched to nomic-embed-text:v1.5, and the FAQs and cognitive distortions were re-embedded and stored in faq_embeddings_small.npy and chunked_per_distortion_small.npy, respectively. The application performs as expected upon testing, but may not perform exactly the same way as was reported in the lab report (DSC360FINAL.pdf) for this reason).
+    
 ## Directions to Install Ollama:
 1) Create a virtual environment to install the Python client/dependencies: ```python3 -m venv myenv``` and activate it: ```source myenv/bin/activate```
 2) Import the necessary packages: ```pip install ollama numpy chromadb scikit-learn``` (NOTE: Lab06 also requires mysql to by installed: 
@@ -25,7 +26,7 @@
    - Lab02:
      - Generation Model -> gemma3:1b *
    - Lab03:
-     - Embedding Model (search) -> nomic-embed-text-v2-moe *
+     - Embedding Model (search) -> nomic-embed-text:v1.5 *
      - Embedding Model (build_index) -> qwen3-embedding:8b 
      - Embedding Model (example) -> mxbai-embed-large
      - Generation Model (example) -> llama2
@@ -37,5 +38,5 @@
    - Lab 06:
      - Generation Model -> gemma3:12b *
    - Final Project:
-     - Embedding Model -> qwen3-embedding:8b *
+     - Embedding Model -> nomic-embed-text:v1.5 *
      - Generation Model -> gemma3:4b *
