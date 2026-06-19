@@ -1,3 +1,4 @@
+## WRITTEN BY THOMAS ALLEN (INSTRUCTOR)
 # Lab 05 Mini — Extracting Structured Data from Unstructured Text
 
 In this lab, you will use a local language model (via **Ollama**) and **Pydantic** validation to turn unstructured text into structured data.
