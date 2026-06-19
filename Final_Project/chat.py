@@ -2,7 +2,11 @@ import ollama
 import numpy as np
 import json
 
-em_model = 'qwen3-embedding:8b'
+#em_model = 'qwen3-embedding:8b'
+#size = 4096
+# IF PERFORMING SLOW SWITCH TO NOMIC:
+em_model = 'nomic-embed-text:v1.5'
+size = 768
 gen_model = 'gemma3:4b'
 context = ["conversation history:"]
 
@@ -17,7 +21,7 @@ def find_relevant_chunks(prompt, file, type):
     resp = ollama.embed(model=em_model, input=prompt)
     vec = resp["embeddings"][0]  
     arr = np.array(vec)
-    shapearr = arr.reshape(4096,1)
+    shapearr = arr.reshape(size,1)
 
     data = np.load(file)
     result = np.dot(data, shapearr)
@@ -143,9 +147,9 @@ def launch():
         else:
             context.append({"role":"user", "content" : prompt})
             classification = validate_input(prompt)
-            top_faq = find_relevant_chunks(prompt, "index/faq_embeddings.npy", "faq")
             pr = prompt
             if(classification == "safe"):
+                top_faq = find_relevant_chunks(prompt, "index/faq_embeddings_small.npy", "faq")
                 if top_faq != []:
                     # if an faq matches, use it in response
                     chunk = advice_for_faq(top_faq[0])
@@ -153,7 +157,7 @@ def launch():
                     query_ollama(p, pr)
                 else:
                     # if faq no match, check for distortion
-                    top_dis = find_relevant_chunks(pr, "index/chunked_per_distortion.npy", "")
+                    top_dis = find_relevant_chunks(pr, "index/chunked_per_distortion_small.npy", "")
                     sim_list = match_to_json(top_dis, "index/descriptions.jsonl")
                     if sim_list != []:
                         # if distortion found, use it in response
