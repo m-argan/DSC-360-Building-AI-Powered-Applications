@@ -14,4 +14,4 @@ The application also includes a safety envelope to flag for inputs which are irr
   - run_tests.py: File used to run tests
 
 # Demo Instructions
-To start the demo, simply run the chat.py file! (NOTE: See repository [README.md](../README.md#directions-to-install-ollama) for more information on how to install ollama and pull the necessary models).
+To start the demo, simply run the chat.py file! (NOTE: See [README.md](../README.md#directions-to-install-ollama) for more information on how to install ollama and pull the necessary models).
