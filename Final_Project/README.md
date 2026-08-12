@@ -4,4 +4,4 @@ The application also includes a safety envelope to flag for inputs which are irr
 
 The index file contains the embeddings and the files containing responses for the FAQs, and JSON objects containing more information about each cognitive distortions. Our test folder contains (limited) tests and describes changes in the prompt (see DSC360FINAL report for more elaborate test sets).
 
-To start the demo, simply run the chat.py file! (See repository README.md for more information on how to install ollama). 
+To start the demo, simply run the chat.py file! (See repository [README.md](../README.md#directions-to-install-ollama) for more information on how to install ollama). 
